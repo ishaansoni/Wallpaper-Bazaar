@@ -1,0 +1,108 @@
+	
+	<?php		
+	
+		 $RecordPerPage = 12;
+		function pagination($RecordCount,$cur_page,$query_var="",$page)
+	{	
+		global $RecordPerPage;
+		
+		//print_r($_SERVER);
+		$pageCount = ceil($RecordCount / $RecordPerPage);
+		if ($pageCount > 1)
+		{
+			if(!empty($query_var))
+			{
+				
+				$page_link=$page."/".$query_var;
+			}
+			else
+				$page_link=$page;
+			$query_string= true;
+			if ( strpos($page_link, '?')!==false )
+				$query_string= false;
+			
+			$prevlabel = "Previous";
+			$nextlabel = "Next";
+			$adjacents=3;
+			$gplist = "<div class=\"paging\">";
+		
+			// previous
+			if($cur_page==1) {
+				$gplist.= "<span class='disable-link previouspag pageprevious'>" . $prevlabel . "</span>\n";
+			}
+			elseif($cur_page==2) {
+				//$gplist .= ' <a href="'.$page_link.'">'.$prevlabel.'</a>';
+				if($query_var=='page')
+					$gplist.= "<a href=\"" . $page . "\" class='previouspag'>$prevlabel</a>\n";
+				else
+					$gplist.= "<a href=\"" . $page_link . "\" class='previouspag'>$prevlabel</a>\n";
+			}
+			else {
+				$gplist .= '<a href="'.$page_link. ( ($query_string?'':'') ). ''.($cur_page-1).'" class="previouspag">'.$prevlabel.'</a>';
+			}
+		
+			// first
+			if($cur_page>($adjacents+1)) {
+			
+				if($query_var=='page')
+					$gplist.= "<a href=\"" . $page . "\">1</a>\n";
+				else
+					$gplist.= "<a href=\"" . $page_link . "\">1</a>\n";
+			}
+			
+			// interval
+			if($cur_page>($adjacents+2)) {
+				$gplist.= "<a>...</a>";
+			}
+		
+			// pages
+			$pmin = ($cur_page>$adjacents) ? ($cur_page-$adjacents) : 1;
+			$pmax = ($cur_page<($pageCount-$adjacents)) ? ($cur_page+$adjacents) : $pageCount;
+		
+			for($i=$pmin; $i<=$pmax; $i++) {
+				if($i==$cur_page) {
+					$gplist.= "<span class=\"current\">" . $i . "</span>";
+				}
+				elseif($i==1) {
+					if($query_var=='page')
+					$gplist.= "<a href=\"" . $page . "\">1</a>\n";
+				else
+					$gplist.= "<a href=\"" . $page_link . "\">1</a>\n";
+				}
+				else {
+					$gplist .= '<a href="'.$page_link. ( ($query_string?'':'') ). ''.$i.'">'.$i.'</a>';
+				}
+			}
+		
+			// interval
+			if($cur_page<($pageCount-$adjacents-1)) {
+				$gplist.= "<a>....</a>";
+			}
+		
+			// last
+			if($cur_page<($pageCount-$adjacents)) {
+				$gplist .= '<a href="'.$page_link. ( ($query_string?'':'') ). ''.($pageCount).'">'.$pageCount.'</a>';
+			}
+		
+			// next
+			if($cur_page<$pageCount) {
+				$gplist .= '<a href="'.$page_link. ( ($query_string?'':'&amp;') ). '/'.($cur_page+1).'" class="pagenext">'.$nextlabel.'</a>';
+			}
+			else {
+				$gplist.= "<span class='disable-link nextpag'>" . $nextlabel . "</span>\n";
+			}
+		
+			$gplist.= "</div><div style='clear: both;'></div>";
+			return $gplist;
+		
+		}
+	}
+		?>
+		
+		
+		<?php 
+		
+		
+		echo "<div class='pagenumber'>".pagination($total_item,$cur_page,$site_url,'')."</div>";
+		
+		?>
